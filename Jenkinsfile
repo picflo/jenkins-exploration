@@ -13,13 +13,26 @@ pipeline {
                 junit 'target/surefire-reports/*.xml'
             }
         }
-        stage('Version') {
-            tools {
-                maven 'mvn3.3.9'}
+        stage('Tests TI') {
             steps {
-                sh'mvn -version'
+                sh "mvn -Dmaven.test.failure.ignore=true install"
+                junit 'target/surefire-reports/**/*.xml'
+            }
+            post {
+                success {
+                    mail to: 'florian.picard@berger-levrault.com', subject: 'Stage Success', body: 'TI SUCCESS'
+                }
             }
         }
+    post {
+        success {
+            mail to: 'florian.picard@berger-levrault.com', subject: 'Job Success', body: 'Test SUCCESS'
+        }
+        failure {
+            mail to: 'florian.picard@berger-levrault.com', subject: 'Job Failure', body: 'Test FAIL'
+        }
+        //always, changed, unstable, aborted
     }
     triggers { cron('@daily') }
 }
+

@@ -24,6 +24,7 @@ pipeline {
                 }
             }
         }
+    }
     post {
         success {
             mail to: 'florian.picard@berger-levrault.com', subject: 'Job Success', body: 'Test SUCCESS'

@@ -1,5 +1,8 @@
 #!/usr/bin/env groovy
 
+@Library('emailName') _
+//Name of library configure in Jenkins configuration
+
 pipeline {
     agent any
     tools {
@@ -7,36 +10,22 @@ pipeline {
         jdk 'jdk8u141'
     }
     stages {
-        stage('run-parallel-actions'){
-            parallel{
-                stage ('action_a'){
-                    steps{
-                        echo "Option work in windows"
-                    }
-                }
-                stage ('action_b'){
-                    steps{
-                        echo "Action B "
-                    }
-                }
-            }
-        }
-        stage ('Deployment Verification'){
-            steps{
-                input 'Build all right, deploy to production?'
-            }
-        }
-        stage('Multi-Input') {
-            //agent none
+        stage('EmailList') {
             steps {
-                script {
-                    multi_input = input message: 'Input', ok: 'Release!', parameters: [choice(name: 'MULTI_INPUT',
-                            choices: 'Option1\nOption2\nOption3',
-                            description: 'Here the description')]
-                }
-                echo multi_input
+                mail to: emailList(), subject: "JobDemo", body: "build #${env.BUILD_NUMBER} – Job demo !"
+                //emailList is the Name of the file placed inside the folder ./vars in the repository set for 'emailName'
             }
         }
     }
     triggers { cron('@daily') }
 }
+
+/*emailList file */
+/*
+#!/usr/bin/env groovy
+
+def call() {
+    Name = "your-email@address.com"
+    return Name
+}
+*/
